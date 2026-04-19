@@ -1,0 +1,86 @@
+[
+    {
+        "name": "cmd",
+        "icon": "cmd.exe.png",
+        "exec_path": "C:\\Windows\\System32\\cmd.exe",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "Everything",
+        "icon": "Everything.ico",
+        "exec_path": "Software\\ProgramFilesLocal\\Everything\\Everything.exe",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "Snipaste",
+        "icon": "Snipaste.exe.lnk.png",
+        "exec_path": "Software\\ProgramFilesLocal\\Snipaste\\Snipaste.exe",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "VNC Viewer",
+        "icon": "vncviewer.exe.png",
+        "exec_path": "Software\\ProgramFilesLocal\\RealVNC\\VNC Viewer\\vncviewer.exe",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "windTerm",
+        "icon": "WindTerm.exe.lnk.png",
+        "exec_path": "Software\\ProgramFilesLocal\\WindTerm\\WindTerm.exe",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "ConEmu64",
+        "icon": "ConEmu64.exe.lnk.png",
+        "exec_path": "Software\\ProgramFilesLocal\\ConEmuPack.230724\\ConEmu64.exe",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "向日葵",
+        "icon": "向日葵1.2.1.exe.png",
+        "exec_path": "Software\\lnk\\向日葵1.2.1.exe",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "Deadline",
+        "icon": "deadlinelauncher.exe.png",
+        "exec_path": "Software\\dccData\\ThinkBox\\Deadline_Client\\bin\\deadlinelauncher.exe",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "Deadline",
+        "icon": "deadline_monitor.png",
+        "exec_path": "Software\\dccData\\ThinkBox\\Deadline_Client\\bin\\deadlinemonitor.exe",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "Deadline",
+        "icon": "deadline_worker.png",
+        "exec_path": "Software\\dccData\\ThinkBox\\Deadline_Client\\bin\\deadlineworker.exe",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "MayaLog",
+        "icon": "logo.png",
+        "exec_path": "Software/Lugwit_syncPlug/lugwit_insapp/trayapp/rez-package-source/l_tray/999.0/src/l_tray/tools/log_view.bat",
+        "args": "",
+        "use_runas": false
+    },
+    {
+        "name": "MD",
+        "icon": "logo.png",
+        "exec_path": "Software/Lugwit_syncPlug/lugwit_insapp/trayapp/rez-package-source/l_tray/999.0/src/l_tray/tools/log_view.lnk",
+        "args": "",
+        "use_runas": false
+    }
+]

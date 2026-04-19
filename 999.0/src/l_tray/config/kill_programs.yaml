@@ -1,0 +1,35 @@
+kill_programs:
+- Maya.exe
+- Houdini.exe
+- UnrealEditor.exe
+- 3dsmax.exe
+- deadlineworker.exe
+- cmd.exe
+- lugwit_chatroom.exe
+- python.exe
+- windsurf.exe
+- lugwit_python.exe
+- lugwit_chatroom.exe
+- python_back.exe
+- vivaldi.exe
+- cmd.exe
+- python_p4v_embed_win.exe
+- pythonw_p4v_embed_win.exe
+- p4v.exe
+- xyplorer.exe
+- cursor.exe
+- mayapy.exe
+- uv.exe
+- dingtalk.exe
+- lugwit_python_maya.exe
+- powershell.exe
+- rez.exe
+- rezpython.exe
+- modellib.exe
+last_selected: Maya.exe
+start_amount: 5
+kill_program: deadlineworker.exe
+maya_programs:
+  Maya: C:/ProgramData/PCGM_Apps/App/Autodesk/Maya2023//bin/maya.exe
+  Unreal Engine: C:/ProgramData/PCGM_Apps/App/Epic Games/UE_4.27/Engine/Binaries/Win64/UE4Editor.exe
+last_selected_kill_program: Maya.exe

@@ -1,0 +1,19 @@
+{
+    "table_names": {
+        "user_table": "user_list",
+        "group_table": "group_list",
+        "group_user_table": "group_users",
+        "user_permission_table": "user_permissions",
+        "group_permission_table": "group_permissions",
+        "user_permission_list_table": "user_permission_list",
+        "group_permission_list_table": "group_permission_list"
+    },
+    "column_names": {
+        "email": "email",
+        "username": "userName",
+        "password": "password",
+        "user_id": "user_id",
+        "group_id": "group_id",
+        "permission_id": "permission_id"
+    }
+}

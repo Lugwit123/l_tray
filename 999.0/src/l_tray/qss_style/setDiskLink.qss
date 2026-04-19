@@ -1,0 +1,178 @@
+/* 暗色主题全局设置 */
+* {
+    font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+}
+
+QWidget {
+    background: #232629;
+    color: #e0e0e0;
+    font-size: 10pt;
+}
+
+/* 主窗口设置 */
+QMainWindow, QDialog {
+    background: #232629;
+}
+
+/* 按钮样式 */
+QPushButton {
+    min-height: 28px;
+    border-radius: 4px;
+    background: #31363b;
+    border: 1px solid #444a52;
+    color: #e0e0e0;
+    padding: 0 12px;
+}
+
+QPushButton:hover {
+    background: #3a3f44;
+    border: 1.5px solid #5b9bd5;
+}
+
+QPushButton:pressed {
+    background: #22262a;
+}
+
+/* 交换按钮特殊样式 */
+QPushButton#swapBtn {
+    font-family: "Segoe UI Symbol";
+    font-size: 14pt;
+    font-weight: bold;
+    padding: 0 4px;
+    background: #2d5a88;
+}
+
+QPushButton#swapBtn:hover {
+    background: #3d6a98;
+}
+
+/* 单行创建按钮特殊样式 */
+QPushButton[text="创建"] {
+    background: #2d5a88;
+    color: white;
+    font-weight: bold;
+    padding: 4px;
+    min-width: 50px;
+}
+
+QPushButton[text="创建"]:hover {
+    background: #3d6a98;
+}
+
+QPushButton[text="创建"]:pressed {
+    background: #1d4a78;
+}
+
+/* 输入框样式 */
+QLineEdit {
+    border: 1px solid #444a52;
+    border-radius: 3px;
+    padding: 4px 8px;
+    background: #1d1f21;
+    color: #e0e0e0;
+    selection-background-color: #2d5a88;
+    selection-color: #ffffff;
+}
+
+QLineEdit:focus {
+    border: 1px solid #5b9bd5;
+    background: #1a1c1e;
+}
+
+/* 标签样式 */
+QLabel {
+    color: #e0e0e0;
+    font-size: 10pt;
+}
+
+/* 状态标签特殊样式 - 使用对象名称 */
+QLabel#sourceStatus,
+QLabel#targetStatus {
+    font-family: "Segoe UI Symbol";
+    font-size: 14pt;
+    font-weight: bold;
+    min-width: 20px;
+    max-width: 20px;
+}
+
+/* 成功状态 - 通过动态类名 */
+QLabel.status-success {
+    color: #4caf50;
+}
+
+/* 错误状态 - 通过动态类名 */
+QLabel.status-error {
+    color: #f44336;
+}
+
+/* 下拉框样式 */
+QComboBox {
+    border: 1px solid #444a52;
+    border-radius: 3px;
+    padding: 4px 8px;
+    background: #1d1f21;
+    color: #e0e0e0;
+    min-height: 28px;
+}
+
+QComboBox:hover {
+    border: 1px solid #5b9bd5;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 20px;
+}
+
+QComboBox::down-arrow {
+    image: url(down_arrow.png);  /* 可选：添加下拉箭头图标 */
+}
+
+QComboBox QAbstractItemView {
+    background: #1d1f21;
+    border: 1px solid #444a52;
+    selection-background-color: #2d5a88;
+    selection-color: #ffffff;
+}
+
+/* 滚动条样式 */
+QScrollBar:vertical {
+    background: #232629;
+    width: 12px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #444a52;
+    min-height: 20px;
+    border-radius: 6px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
+    background: none;
+}
+
+QScrollBar::up-arrow:vertical,
+QScrollBar::down-arrow:vertical {
+    background: none;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+/* 对话框样式 */
+QMessageBox {
+    background-color: #232629;
+}
+
+QMessageBox QLabel {
+    color: #e0e0e0;
+}
+
+QMessageBox QPushButton {
+    min-width: 80px;
+}

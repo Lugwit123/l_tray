@@ -1,0 +1,1 @@
+"C:\Users\fqq\AppData\Roaming\Python\Python311\Scripts\uvicorn.exe" fastapi_server:app --reload --host=127.0.0.1
