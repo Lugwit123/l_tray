@@ -619,6 +619,114 @@ class TrayIcon(QSystemTrayIcon):
                 continue
         return False
 
+    def _iter_l_scheduler_processes(self):
+        """迭代所有 l_scheduler 相关进程（用于显示窗口/重启）。"""
+        instance_tag = "l_tray_scheduler"
+        for process in psutil.process_iter(["pid", "name", "cmdline"]):
+            try:
+                cmdline = process.info.get("cmdline") or []
+                cmdline_text = " ".join(cmdline).lower()
+                if "--instance-tag" in cmdline_text and instance_tag in cmdline_text:
+                    yield process
+                    continue
+                if "l_scheduler.main" in cmdline_text and "--ui" in cmdline_text:
+                    yield process
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
+
+    def _show_l_scheduler_window(self) -> bool:
+        """尝试把已运行的 l_scheduler 窗口置前显示。"""
+        try:
+            pids: list[int] = []
+            for p in self._iter_l_scheduler_processes():
+                try:
+                    pids.append(int(p.pid))
+                    try:
+                        for ch in p.children(recursive=True):
+                            try:
+                                pids.append(int(ch.pid))
+                            except Exception:
+                                continue
+                    except Exception:
+                        pass
+                except Exception:
+                    continue
+            if pids:
+                seen = set()
+                pids = [x for x in pids if not (x in seen or seen.add(x))]
+
+            hwnd = console.bring_top_level_window_to_front_by_pids(pids)
+            if hwnd:
+                return True
+
+            # 退化：按标题关键词匹配
+            keywords = ["l scheduler", "任务管理", "l_scheduler"]
+            found_hwnds = []
+
+            def _enum2(hwnd, _):
+                try:
+                    title = win32gui.GetWindowText(hwnd) or ""
+                    t = title.lower()
+                    if any(k in t for k in keywords):
+                        found_hwnds.append(hwnd)
+                except Exception:
+                    pass
+
+            win32gui.EnumWindows(_enum2, None)
+            if not found_hwnds:
+                return False
+            hwnd = found_hwnds[0]
+            win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+            try:
+                win32gui.SetForegroundWindow(hwnd)
+            except Exception:
+                pass
+            return True
+        except Exception:
+            return False
+
+    def _restart_l_scheduler(self) -> None:
+        """结束已有实例后重新启动。"""
+        killed = 0
+        for p in list(self._iter_l_scheduler_processes()):
+            try:
+                p.terminate()
+                killed += 1
+            except Exception:
+                continue
+        # 给一点时间退出，必要时强杀
+        deadline = time.time() + 3.0
+        while time.time() < deadline:
+            alive = False
+            for p in list(self._iter_l_scheduler_processes()):
+                alive = True
+                try:
+                    if p.is_running():
+                        pass
+                except Exception:
+                    pass
+            if not alive:
+                break
+            time.sleep(0.1)
+        for p in list(self._iter_l_scheduler_processes()):
+            try:
+                p.kill()
+            except Exception:
+                pass
+        self.showMessage("提示", f"已结束 {killed} 个调度器进程，正在重启…", self.icon)
+        self.start_rez_package(
+            packages=["python-3.12", "Lugwit_Module", "l_scheduler"],
+            run_args=[
+                "pythonw",
+                "-m",
+                "l_scheduler.main",
+                "--ui",
+                "--instance-tag",
+                "l_tray_scheduler",
+            ],
+            action_name="l_scheduler",
+        )
+
     def is_start_multi_app_running(self) -> bool:
         for process in psutil.process_iter(["name", "cmdline"]):
             try:
@@ -789,7 +897,26 @@ class TrayIcon(QSystemTrayIcon):
 
     def start_l_scheduler(self):
         if self.is_l_scheduler_running():
-            self.showMessage("提示", "定时任务调度器已在运行。", self.icon)
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("提示")
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.setText("定时任务调度器已在运行。")
+            btn_show = msg_box.addButton("显示窗口", QMessageBox.AcceptRole)
+            btn_restart = msg_box.addButton("重启", QMessageBox.DestructiveRole)
+            msg_box.addButton("取消", QMessageBox.RejectRole)
+            msg_box.exec_()
+            clicked = msg_box.clickedButton()
+            if clicked == btn_show:
+                ok = self._show_l_scheduler_window()
+                if not ok:
+                    self._notify_launch_issue(
+                        "提示",
+                        "检测到调度器在运行，但未找到可显示的窗口（可能已最小化到托盘或窗口标题不同）。",
+                    )
+                return
+            if clicked == btn_restart:
+                self._restart_l_scheduler()
+                return
             return
 
         started = self.start_rez_package(
@@ -1432,7 +1559,7 @@ class TrayIcon(QSystemTrayIcon):
         # for child_process in range(child_processes):
         #     os.system(f'taskkill /F /IM /PID {child_process}')
         os.system(f'taskkill /F /IM lugwit_pythonw.exe')
-        os._exit(0)
+        sys.exit()
         
     def trayToolCodeToADisk(self):
         os.startfile(LM.LugwitAppDir+r'\同步Lugwit托盘工具到A盘.bat')
@@ -1469,7 +1596,7 @@ class TrayIcon(QSystemTrayIcon):
             QMessageBox.information(None, "提示", f"重启启动失败:\n{exc}")
             return
 
-        os._exit(0)
+        sys.exit()
         
     
     def login(self):
