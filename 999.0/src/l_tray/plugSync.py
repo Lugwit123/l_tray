@@ -8,8 +8,8 @@ import atexit
 st=time.time()
 import ctypes
 
-# Perforce 功能开关（与 ins.py 中的 ENABLE_PERFORCE 保持一致）
-ENABLE_PERFORCE = False
+# Perforce 功能开关 - 从 _config.py 统一读取，修改 _config.py 即可控制所有模块
+from _config import ENABLE_PERFORCE
 
 import winreg as reg
 from importlib  import reload
@@ -18,7 +18,7 @@ from multiprocessing import Process
 import subprocess
 import sys, psutil, os, datetime, time,re,codecs
 
-
+from tool_env import *
 # Try to import L_Tools (optional)
 try:
     from L_Tools.sys_tool import l_window
@@ -78,26 +78,21 @@ if  LugwitToolDir_env.lower()!=LugwitToolDir.lower():
 sys.path.append(LugwitToolDir+'/Lib')    
 env_var_jsonFile=curDir+'/env_var.json'
 
-# Try to import Lugwit_Module (optional)
-try:
-    from Lugwit_Module import *
-    from Lugwit_Module.l_src import l_os
-    from Lugwit_Module.l_src import l_subprocess
-    import Lugwit_Module as LM
-    
-    # Check if required attributes exist
-    if hasattr(LM, 'Lugwit_publicDisc') and hasattr(LM, 'hostName') and hasattr(LM, 'userName'):
-        LUGWIT_MODULE_AVAILABLE = True
-    else:
-        print("Warning: Lugwit_Module imported but missing required attributes")
-        LUGWIT_MODULE_AVAILABLE = False
-        LM = None
-except ImportError as e:
-    print(f"Warning: Lugwit_Module not available: {e}")
+
+
+from Lugwit_Module import *
+from Lugwit_Module.l_src import l_os
+from Lugwit_Module.l_src import l_subprocess
+import Lugwit_Module as LM
+
+# Check if required attributes exist
+if hasattr(LM, 'Lugwit_publicDisc') and hasattr(LM, 'hostName') and hasattr(LM, 'userName'):
+    LUGWIT_MODULE_AVAILABLE = True
+else:
+    print("Warning: Lugwit_Module imported but missing required attributes")
     LUGWIT_MODULE_AVAILABLE = False
     LM = None
-    l_os = None
-    l_subprocess = None
+
 
 # 获取ConEmu64_lugwit.exe的主窗口句柄（仅在 L_Tools 和 Lugwit_Module 可用时）
 if L_TOOLS_AVAILABLE and LUGWIT_MODULE_AVAILABLE:
@@ -152,7 +147,7 @@ from Tray import TrayIcon
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QWidget
 from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
-DeadlineWorkder_file=fr'{LM.LugwitLibDir}\L_Scheduled_Task\start_DeadlineWorkder.py'
+# DeadlineWorkder_file=fr'{LM.LugwitLibDir}\L_Scheduled_Task\start_DeadlineWorkder.py'
 
 
 app = QApplication(sys.argv)
@@ -287,6 +282,8 @@ def mulThread_syncFile():
 def start_p4v_embed_win():
     if not ENABLE_PERFORCE:
         return
+    if not LUGWIT_MODULE_AVAILABLE:
+        return
 
     python_exe_path=LM.LugwitAppDir+r'\python_env\pythonw_p4v_embed_win.exe'
     if is_process_running('pythonw_p4v_embed_win.exe'):
@@ -390,7 +387,8 @@ def check_icon_visibility(tray:TrayIcon):
     
     
 # 调用函数
-add_to_startup(LM.ProgramFilesLocal+r"\Snipaste\Snipaste.exe")
+if LUGWIT_MODULE_AVAILABLE:
+    add_to_startup(LM.ProgramFilesLocal+r"\Snipaste\Snipaste.exe")
 
 def is_process_running(process_name: str) -> bool:
     for process in psutil.process_iter(['name']):

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-
-# Perforce 功能总开关，设为 False 关闭所有 P4 相关功能
-ENABLE_PERFORCE = False
+# 从 _config.py 导入全局配置，修改 _config.py 中的值即可控制所有模块的行为
+from ._config import ENABLE_PERFORCE
 
 from .Tray import TrayIcon
 

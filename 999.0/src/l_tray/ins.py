@@ -3,9 +3,8 @@ import winreg,os,sys,traceback
 import shutil
 from typing import Literal
 
-# Perforce 功能开关（与 l_tray/__init__.py 中的 ENABLE_PERFORCE 保持一致）
-# 注意：不能导入 l_tray.ENABLE_PERFORCE（循环导入），此处直接定义
-ENABLE_PERFORCE = False
+# Perforce 功能开关 - 从 _config.py 统一读取，修改 _config.py 即可控制所有模块
+from _config import ENABLE_PERFORCE
 
 # Try to import winshell (optional)
 try:

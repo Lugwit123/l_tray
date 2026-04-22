@@ -4,8 +4,8 @@ import socket
 import os,sys,json,traceback,re,subprocess
 from typing import List   ,Tuple 
 import ins 
-# 从 ins 模块获取 Perforce 开关（避免循环导入）
-from ins import ENABLE_PERFORCE
+# 从 _config.py 统一读取 Perforce 开关，避免循环导入
+from _config import ENABLE_PERFORCE
 import  winshell 
 import console
 import copy
@@ -103,20 +103,20 @@ else:
 print("创建方式花费时间",time.time()-st)
 
 
-ins.createShortCut(
-    exe_path = LM.Lugwit_publicPath+ r'\Python\PyFile\syncPlugLib\update.bat.lnk',
-    shortcut_path = os.path.join(winshell.programs(), '0lugwit_update.lnk'),
-    name = '0lugwit_update',)
+# ins.createShortCut(
+#     exe_path = LM.Lugwit_publicPath+ r'\Python\PyFile\syncPlugLib\update.bat.lnk',
+#     shortcut_path = os.path.join(winshell.programs(), '0lugwit_update.lnk'),
+#     name = '0lugwit_update',)
 
-desktop_path = desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-ins.createShortCut(
-    exe_path = LM.ProgramFilesLocal+ '\\cgteamwork\\bin\\cgtw\\CgTeamWork.exe',
-    shortcut_path = os.path.join(winshell.programs(), '0cgtw.lnk'),
-    name = '0cgtw',)
-ins.createShortCut(
-    exe_path = LM.ProgramFilesLocal+ '\\cgteamwork\\bin\\cgtw\\CgTeamWork.exe',
-    shortcut_path = os.path.join(desktop_path, 'cgtw.lnk'),
-    name = 'cgtw',)
+# desktop_path = desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+# ins.createShortCut(
+#     exe_path = LM.ProgramFilesLocal+ '\\cgteamwork\\bin\\cgtw\\CgTeamWork.exe',
+#     shortcut_path = os.path.join(winshell.programs(), '0cgtw.lnk'),
+#     name = '0cgtw',)
+# ins.createShortCut(
+#     exe_path = LM.ProgramFilesLocal+ '\\cgteamwork\\bin\\cgtw\\CgTeamWork.exe',
+#     shortcut_path = os.path.join(desktop_path, 'cgtw.lnk'),
+#     name = 'cgtw',)
 # sys.exit()
 
 ins.setBoot()
@@ -966,77 +966,77 @@ class TrayIcon(QSystemTrayIcon):
         except Exception as exc:
             LM.lprint(f"启动 l_scheduler 失败: {exc}")
 
-    def writeLoginInfo(self,loginInfoList:Tuple[login_info_dataType.P4LoginInfo,
-                                             login_info_dataType.P4LoginInfo]):# NOTE 写入登录信息
-        print ("写入登录信息",'loginInfo',loginInfoList)
-        if not loginInfoList:
-            return
-        from qss_style import qss_style
-        toolTipList_str = ""
-        clientTypeEnZhType={'project':'项目','plug':'插件'}
-        login_info_dataType.write_p4login_info(loginInfoList)
-        for loginInfo in loginInfoList:
-            if not loginInfo:
-                continue
-            #self.writeDepartInfo(loginInfo)
-            clientType = loginInfo.clientType
-            port = loginInfo.port
-            clientType_zh=clientTypeEnZhType.get(clientType)
-            FullName = loginInfo.FullName
-            username = loginInfo.User
-            clientName = loginInfo.clientName
-            clientRoot = loginInfo.clientRoot
-            userGroups = loginInfo.userGroups
-            departEnList = [] # 添加部门UI
-            departZhList = [] # 添加部门UI
-            for userGroup in userGroups:
-                departEnName=userGroup.name
-                departZhName=userGroup.description
-                departEnList.append(departEnName)
-                departZhList.append(departZhName)
-            if clientType == "project":
-                self.userNameWgt.setText(f'用户名 : {FullName}')
-                btn = QPushButton(str(departZhList))
-                btn.departEnName=str(departEnList)
-                size_policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-                btn.setSizePolicy(size_policy)
-                self.departBtnGrp_lay.addWidget(btn)
-                btn.setStyleSheet(qss_style.loginWidget_style)
-                btn.setCheckable(True)  # 使按钮可选中
-                self.departBtnGrp.addButton(btn)
-                btn.setChecked(True)
-                if 'TD' not in departEnList:
-                    self.customDepartBtn.setEnabled(False)
-                else:
-                    self.isTD=True
-            toolTipList_str+=(
-                (f'{clientType_zh}用户      : {username}<br>'+
-                f'{clientType_zh}用户全名  : {FullName}<br>'+
-                f'{clientType_zh}工作区    : {clientName}<br>'+
-                f'{clientType_zh}工作区目录    : {clientRoot}<br>'+
-                f'{clientType_zh}部门      : {departEnList}<br>'+
-                f'{clientType_zh}P4端口    : {port}<br><br>')
-            )
+    # def writeLoginInfo(self,loginInfoList:Tuple[login_info_dataType.P4LoginInfo,
+    #                                          login_info_dataType.P4LoginInfo]):# NOTE 写入登录信息
+    #     print ("写入登录信息",'loginInfo',loginInfoList)
+    #     if not loginInfoList:
+    #         return
+    #     from qss_style import qss_style
+    #     toolTipList_str = ""
+    #     clientTypeEnZhType={'project':'项目','plug':'插件'}
+    #     login_info_dataType.write_p4login_info(loginInfoList)
+    #     for loginInfo in loginInfoList:
+    #         if not loginInfo:
+    #             continue
+    #         #self.writeDepartInfo(loginInfo)
+    #         clientType = loginInfo.clientType
+    #         port = loginInfo.port
+    #         clientType_zh=clientTypeEnZhType.get(clientType)
+    #         FullName = loginInfo.FullName
+    #         username = loginInfo.User
+    #         clientName = loginInfo.clientName
+    #         clientRoot = loginInfo.clientRoot
+    #         userGroups = loginInfo.userGroups
+    #         departEnList = [] # 添加部门UI
+    #         departZhList = [] # 添加部门UI
+    #         for userGroup in userGroups:
+    #             departEnName=userGroup.name
+    #             departZhName=userGroup.description
+    #             departEnList.append(departEnName)
+    #             departZhList.append(departZhName)
+    #         if clientType == "project":
+    #             self.userNameWgt.setText(f'用户名 : {FullName}')
+    #             btn = QPushButton(str(departZhList))
+    #             btn.departEnName=str(departEnList)
+    #             size_policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+    #             btn.setSizePolicy(size_policy)
+    #             self.departBtnGrp_lay.addWidget(btn)
+    #             btn.setStyleSheet(qss_style.loginWidget_style)
+    #             btn.setCheckable(True)  # 使按钮可选中
+    #             self.departBtnGrp.addButton(btn)
+    #             btn.setChecked(True)
+    #             if 'TD' not in departEnList:
+    #                 self.customDepartBtn.setEnabled(False)
+    #             else:
+    #                 self.isTD=True
+    #         toolTipList_str+=(
+    #             (f'{clientType_zh}用户      : {username}<br>'+
+    #             f'{clientType_zh}用户全名  : {FullName}<br>'+
+    #             f'{clientType_zh}工作区    : {clientName}<br>'+
+    #             f'{clientType_zh}工作区目录    : {clientRoot}<br>'+
+    #             f'{clientType_zh}部门      : {departEnList}<br>'+
+    #             f'{clientType_zh}P4端口    : {port}<br><br>')
+    #         )
             
 
 
 
-        local_ips = get_all_local_ips()
-        ip_list = []
-        for interface, ips in local_ips.items():
-            ip_list.append(f"{interface}: {', '.join(ips)}")
+    #     local_ips = get_all_local_ips()
+    #     ip_list = []
+    #     for interface, ips in local_ips.items():
+    #         ip_list.append(f"{interface}: {', '.join(ips)}")
 
-        self.userNameWgt.setToolTip(toolTipList_str+'<br>'.join(ip_list))
+    #     self.userNameWgt.setToolTip(toolTipList_str+'<br>'.join(ip_list))
 
-        self.depart_layout.addStretch(1)
-        if  self.isTD:
-            return
-            print("启动聊天室")
-            l_subprocess.startPyFile(
-                        LM.LugwitLibDir+r'/ChatRoom/localend/local_app.py',
-                        'main',
-                        specify_sys_executable='currentPythonJieShiQi', 
-                        usePythonw=True)# type: ignore
+    #     self.depart_layout.addStretch(1)
+    #     if  self.isTD:
+    #         return
+    #         print("启动聊天室")
+    #         l_subprocess.startPyFile(
+    #                     LM.LugwitLibDir+r'/ChatRoom/localend/local_app.py',
+    #                     'main',
+    #                     specify_sys_executable='currentPythonJieShiQi', 
+    #                     usePythonw=True)# type: ignore
 
         
     def onMenuShow(self,lnkDir):
@@ -1314,6 +1314,7 @@ class TrayIcon(QSystemTrayIcon):
     
     # 显示用户信息,自定义部门从文件读取,其他信息实时获取
     def userInfoMenuItems(self,iconPath=''):
+        return
         widgetAction = QWidgetAction(self)
         widget = QWidget()
         self.depart_layout = QHBoxLayout()
