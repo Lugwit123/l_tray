@@ -657,6 +657,23 @@ class TrayIcon(QSystemTrayIcon):
 
             hwnd = console.bring_top_level_window_to_front_by_pids(pids)
             if hwnd:
+                try:
+                    win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                    win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
+                except Exception:
+                    pass
+                try:
+                    win32gui.PostMessage(hwnd, win32con.WM_SYSCOMMAND, win32con.SC_RESTORE, 0)
+                except Exception:
+                    pass
+                try:
+                    win32gui.BringWindowToTop(hwnd)
+                except Exception:
+                    pass
+                try:
+                    win32gui.SetForegroundWindow(hwnd)
+                except Exception:
+                    pass
                 return True
 
             # 退化：按标题关键词匹配

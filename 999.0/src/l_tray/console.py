@@ -7,28 +7,13 @@ try:
 except:
     pass
 
-# Try to import win32 modules (optional)
-try:
-    import win32gui
-    import win32con
-    import win32process
-    try:
-        import win32api
-    except ImportError:
-        win32api = None
-    from win32con import SWP_NOMOVE, SWP_NOSIZE, SW_HIDE, SW_SHOW, SWP_NOZORDER, SWP_FRAMECHANGED
-    WIN32_AVAILABLE = True
-    print("win32gui", win32gui)
-    print("win32con", win32con)
-except ImportError:
-    print("Warning: win32 modules not available in console.py")
-    WIN32_AVAILABLE = False
-    win32gui = None
-    win32con = None
-    win32process = None
-    win32api = None
-    # Define dummy constants
-    SWP_NOMOVE = SWP_NOSIZE = SW_HIDE = SW_SHOW = SWP_NOZORDER = SWP_FRAMECHANGED = 0
+# Import win32 modules (required)
+import win32gui
+import win32con
+import win32process
+import win32api
+from win32con import SWP_NOMOVE, SWP_NOSIZE, SW_HIDE, SW_SHOW, SWP_NOZORDER, SWP_FRAMECHANGED
+WIN32_AVAILABLE = True
 
 # Try to import psutil
 try:
@@ -40,8 +25,8 @@ except ImportError:
 def get_grandparent_window_info():
     """获取祖父进程的窗口句柄和名称（仅适用于 Windows）。"""
     # Check if required modules are available
-    if not psutil or not WIN32_AVAILABLE:
-        print("Warning: psutil or win32 modules not available, returning None")
+    if not psutil:
+        print("Warning: psutil not available, returning None")
         return None, None
     
     try:
@@ -87,11 +72,6 @@ def get_grandparent_window_info():
 #     print("无法获取父进程信息。")
 
 def find_window_by_title(titleList=[]):
-    if not WIN32_AVAILABLE:
-        print("Warning: win32 modules not available")
-        return None
-    
-    print("locals>>>>>>>>>>>>>>>",locals(),titleList)
     def callback(hwnd, hwnds):
         if win32gui.IsWindowVisible(hwnd):
             # if isinstance(titleList,list):
@@ -102,7 +82,6 @@ def find_window_by_title(titleList=[]):
 
     hwnds = []
     win32gui.EnumWindows(callback, hwnds)
-    print("hwnds",hwnds,titleList)
     if hwnds:
         os.environ['tray_hwnd'] = str(hwnds[0])
         return hwnds[0]
@@ -112,7 +91,7 @@ def find_window_by_title(titleList=[]):
 
 def bring_top_level_window_to_front_by_pids(pids):
     """按 PID 列表查找顶层可见窗口并置前（返回 hwnd 或 None）。"""
-    if not psutil or not WIN32_AVAILABLE:
+    if not psutil:
         return None
     try:
         want = set(int(x) for x in pids if x is not None)
@@ -273,9 +252,6 @@ def bring_top_level_window_to_front_by_pids(pids):
     return hwnd
         
 def is_window_visible(hwnd):
-    if not WIN32_AVAILABLE:
-        return False
-    
     # 获取窗口样式
     style = win32gui.GetWindowLong(hwnd, win32con.GWL_STYLE)
     # 检查WS_VISIBLE标志
@@ -284,10 +260,6 @@ def is_window_visible(hwnd):
 # Name	管理员: 0lugwit_insapp (Admin)
 
 def hide_taskbar_icon(titleList=["管理员: 0lugwit_insapp (Admin)"]):
-    if not WIN32_AVAILABLE:
-        print("Warning: win32 modules not available, cannot hide taskbar icon")
-        return
-    
     # 获取控制台窗口句柄
     # 支持尝试过通过cpython的控制台窗口查找窗口句柄的,但是找到的是cmd.exe
     # win11的窗口确实window teriminal,所以放弃了这个办法,改用标题查找

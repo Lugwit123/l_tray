@@ -153,6 +153,13 @@ DeadlineWorkder_file=fr'{LM.LugwitLibDir}\L_Scheduled_Task\start_DeadlineWorkder
 
 
 app = QApplication(sys.argv)
+
+# 托盘入口：关闭所有窗口也不应退出进程（否则 QMessageBox 等会误杀托盘）。
+try:
+    app.setQuitOnLastWindowClosed(False)
+except Exception:
+    pass
+
 from ctypes import windll
 import time
 import win32file
