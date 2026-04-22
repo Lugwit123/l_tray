@@ -4,6 +4,8 @@ import socket
 import os,sys,json,traceback,re,subprocess
 from typing import List   ,Tuple 
 import ins 
+# 从 ins 模块获取 Perforce 开关（避免循环导入）
+from ins import ENABLE_PERFORCE
 import  winshell 
 import console
 import copy
@@ -30,9 +32,10 @@ lprint=LM.lprint
 from Lugwit_Module.l_src import insLocation
 from Lugwit_Module.l_src import l_subprocess
 from Lugwit_Module.l_src.UILib import toggle_ui_visable
-from lperforce import loginP4,p4_baselib
+if ENABLE_PERFORCE:
+    from lperforce import loginP4,p4_baselib
+    from lperforce.dataType import login_info as login_info_dataType
 from importlib  import reload
-from lperforce.dataType import login_info as login_info_dataType
 from L_Maya import start_maya
 from L_Tools.sys_tool import l_admin
 
@@ -158,6 +161,8 @@ class FindLoginInfoThread(QThread):
     task_finished = pyqtSignal(list)
 
     def run(self):
+        if not ENABLE_PERFORCE:
+            return
         # 模拟一个耗时任务
         result_project = p4_baselib.getP4LoginInfo(infoSource='project')
         lprint (f"登录项目成功{result_project}")
@@ -474,42 +479,43 @@ class TrayIcon(QSystemTrayIcon):
         
         self.menu.addSeparator()
         
-        env = {'PATH':';'.join([
-                            LM.perforceInsDir,
-                            oriEnvVar.get('PATH',""),
-                            LM.LugwitAppDir+'\\python_env'])}
-        p4v_exe=LM.perforceInsDir+'\\p4v.exe'
-        p4Admin = LM.perforceInsDir+'\\p4Admin.exe'
-        p4_env_var=copy.deepcopy(env)
-        p4_env_var['PATH']+=';'+LM.LugwitAppDir+'\\python_env'
-        self.P4VAction = QAction(QIcon(iconDir+r'\p4v.png'),
-            "启动P4V-插件", self, 
-            triggered=partial(ins.startP4V_Plug))
-        self.menu.addAction(self.P4VAction)
+        if ENABLE_PERFORCE:
+            env = {'PATH':';'.join([
+                                LM.perforceInsDir,
+                                oriEnvVar.get('PATH',""),
+                                LM.LugwitAppDir+'\\python_env'])}
+            p4v_exe=LM.perforceInsDir+'\\p4v.exe'
+            p4Admin = LM.perforceInsDir+'\\p4Admin.exe'
+            p4_env_var=copy.deepcopy(env)
+            p4_env_var['PATH']+=';'+LM.LugwitAppDir+'\\python_env'
+            self.P4VAction = QAction(QIcon(iconDir+r'\p4v.png'),
+                "启动P4V-插件", self, 
+                triggered=partial(ins.startP4V_Plug))
+            self.menu.addAction(self.P4VAction)
 
-        pyFile =  LM.LugwitToolDir+r'\src\ins.py'
-        self.P4VAction_project = QAction(QIcon(iconDir+r'\p4v.png'),
-            "启动P4V-项目", self, 
-            triggered=partial(ins.startP4V_H_Project))
-        
-        self.menu.addAction(self.P4VAction_project)
-        
-        self.P4AdminAction = QAction(QIcon(iconDir+r'\p4Admin.png'),
-                    "启动P4Admin", self, 
-                    # triggered=lambda:os.startfile(fr"{LM.perforceInsDir}\p4Admin.exe"))
-                    triggered=partial(l_subprocess.startProcess,p4Admin,p4_env_var))
-        self.menu.addAction(self.P4AdminAction)
+            pyFile =  LM.LugwitToolDir+r'\src\ins.py'
+            self.P4VAction_project = QAction(QIcon(iconDir+r'\p4v.png'),
+                "启动P4V-项目", self, 
+                triggered=partial(ins.startP4V_H_Project))
+            
+            self.menu.addAction(self.P4VAction_project)
+            
+            self.P4AdminAction = QAction(QIcon(iconDir+r'\p4Admin.png'),
+                        "启动P4Admin", self, 
+                        # triggered=lambda:os.startfile(fr"{LM.perforceInsDir}\p4Admin.exe"))
+                        triggered=partial(l_subprocess.startProcess,p4Admin,p4_env_var))
+            self.menu.addAction(self.P4AdminAction)
 
-        pyFile = LM.LugwitLibDir+r'\LPERFORCE\modifyClient\main.py'
-        self.move_client_Action = QAction(QIcon(iconDir+r'\迁移工作区.webp'),
-                    "账号注册,建立工作区", self, 
-                    # triggered=lambda:os.startfile(fr"{LM.perforceInsDir}\p4Admin.exe"))
-                    triggered=partial(l_subprocess.startPyFile,
-                                    pyFile,
-                                    'main',
-                                    specify_sys_executable='currentPythonJieShiQi', 
-                                    usePythonw=False))
-        self.menu.addAction(self.move_client_Action)
+            pyFile = LM.LugwitLibDir+r'\LPERFORCE\modifyClient\main.py'
+            self.move_client_Action = QAction(QIcon(iconDir+r'\迁移工作区.webp'),
+                        "账号注册,建立工作区", self, 
+                        # triggered=lambda:os.startfile(fr"{LM.perforceInsDir}\p4Admin.exe"))
+                        triggered=partial(l_subprocess.startPyFile,
+                                        pyFile,
+                                        'main',
+                                        specify_sys_executable='currentPythonJieShiQi', 
+                                        usePythonw=False))
+            self.menu.addAction(self.move_client_Action)
         
 
         

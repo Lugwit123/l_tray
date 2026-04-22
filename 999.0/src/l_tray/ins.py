@@ -3,6 +3,10 @@ import winreg,os,sys,traceback
 import shutil
 from typing import Literal
 
+# Perforce 功能开关（与 l_tray/__init__.py 中的 ENABLE_PERFORCE 保持一致）
+# 注意：不能导入 l_tray.ENABLE_PERFORCE（循环导入），此处直接定义
+ENABLE_PERFORCE = False
+
 # Try to import winshell (optional)
 try:
     import winshell
@@ -34,13 +38,21 @@ try:
 except ImportError as e:
     print(f"Warning: Lugwit_Module not available in ins.py: {e}")
     LUGWIT_MODULE_AVAILABLE = False
+import Lugwit_Module as LM
+print("LM---------------------------->",LM)
+
 
 # Try to import lperforce (optional)
-try:
-    from lperforce import p4_baselib,loginP4
-    LPERFORCE_AVAILABLE = True
-except ImportError as e:
-    print(f"Warning: LPerforce not available: {e}")
+if ENABLE_PERFORCE:
+    try:
+        from lperforce import p4_baselib,loginP4
+        LPERFORCE_AVAILABLE = True
+    except ImportError as e:
+        print(f"Warning: LPerforce not available: {e}")
+        LPERFORCE_AVAILABLE = False
+        p4_baselib = None
+        loginP4 = None
+else:
     LPERFORCE_AVAILABLE = False
     p4_baselib = None
     loginP4 = None
@@ -59,7 +71,8 @@ from  Lugwit_Module.l_src.l_subprocess import showMessage_ps
 from  Lugwit_Module.l_src import l_subprocess
 import  Lugwit_Module as LM
 
-from controlP4V.findP4vWindows import find_all_p4v_windows
+if ENABLE_PERFORCE:
+    from controlP4V.findP4vWindows import find_all_p4v_windows
 import win32gui
 import win32con
 
@@ -92,7 +105,8 @@ ip = socket.gethostbyname(socket.gethostname())
 
 
 # os.system(f'cmd/c md {USERPROFILE}\\.p4qt')
-os.makedirs(fr'{USERPROFILE}\.p4qt',exist_ok=True)
+if ENABLE_PERFORCE:
+    os.makedirs(fr'{USERPROFILE}\.p4qt',exist_ok=True)
 
 
 try:
@@ -148,9 +162,9 @@ def setPathEnvironmentVariable():
             pathValue= winreg.QueryValueEx(key, "path")[0]
             pathValue=pathValue.split(';')
             for x in copy.deepcopy(pathValue):
-                if 'D:\plug_in' in x:
+                if 'D:\\plug_in' in x:
                     pathValue.remove(x)
-                if 'Perforce' in x:
+                if ENABLE_PERFORCE and 'Perforce' in x:
                         pathValue.remove(x)
                         
             if f'{lugwit_PluginPath}\\Python\\Python37' not in pathValue:
@@ -162,9 +176,11 @@ def setPathEnvironmentVariable():
             if f'{lugwit_PluginPath}\\Python\\Python37\Scripts' not in pathValue:
                 pathValue+=[f'{lugwit_PluginPath}\\Python\\Python37\Scripts']
             if r'C:\Program Files\Perforce\\' not in pathValue:
-                pathValue+=['D:\Program Files\Perforce\\']
+                if ENABLE_PERFORCE:
+                    pathValue+=['D:\Program Files\Perforce\\']
             if r'C:\Program Files\Perforce\Server\\' not in pathValue:
-                pathValue+=['D:\Program Files\Perforce\Server\\']
+                if ENABLE_PERFORCE:
+                    pathValue+=['D:\Program Files\Perforce\Server\\']
             pathValue=[r'C:\windows\system32']+pathValue
             pathValue=sorted(list(set(pathValue)),key=pathValue.index)
             #pathValue=sorted(pathValue,key=lambda x: len(x))
@@ -203,6 +219,8 @@ def setEnvVariable():
 
 
 def modify_connectionmap_xml():
+    if not ENABLE_PERFORCE:
+        return
     print (u'修改并复制connectionmap_xm文件到.p4qt文件夹')
     connectionmap_xml_template=Lugwit_publicPath+'\\DCCSoftware\\Perforce\\Config\\connectionmap.xml'
     connectionmap_xml_temp=os.environ['temp']+'\\connectionmap.xml'
@@ -237,6 +255,8 @@ def getWsNameByRoot(RootDir_parm='D:/TD_Depot'):
     
     
 def modify_ApplicationSettings_xml():
+    if not ENABLE_PERFORCE:
+        return
     #192.168.1.191:1666, qingqing, qingqing_DESKTOP-M9L2CBO_plug
     connectionmap_xml_template=Lugwit_publicPath+'\\DCCSoftware\\Perforce\\Config\\ApplicationSettings.xml'
     connectionmap_xml_temp=os.environ['temp']+'\\ApplicationSettings.xml'
@@ -305,6 +325,8 @@ def insDeadline():
     #     print("不复制文件")
     
 def copyPerforceAndDeadline():
+    if not ENABLE_PERFORCE:
+        return
     print ('复制Deadline和Perforce')
     import win32con, win32gui
     # os.system('mkdir "D:\Program Files"')
@@ -333,6 +355,8 @@ def copyPerforceAndDeadline():
 # sys.exit()
 
 def insP4AndDownloadData():
+    if not ENABLE_PERFORCE:
+        return
     copyPerforceAndDeadline()
     p4=loginP4.p4_login(port="192.168.110.61:1666",userName=userName)
     print ("旧的工作区",p4_baselib.getOldClient(p4,userName=userName))
@@ -454,6 +478,8 @@ def insHoudiniPlug():
     
         
 def installP4Tool(*args):   
+    if not ENABLE_PERFORCE:
+        return
     pathA=Lugwit_publicPath+r'\DCCSoftware\ProgramFilesLocal\perforce\Config\customtools.xml'
     pathB='{}\\.p4qt\\customtools.xml'.format(USERPROFILE)
     # copyStr=f'echo F| Xcopy {pathA} {pathB} /Y /R'
@@ -585,6 +611,8 @@ def _performIncrementalNukeUpdate():
 
 @LM.try_exp
 def startP4V(type: Literal['project', 'plug'] = 'project'):
+    if not ENABLE_PERFORCE:
+        return
     with codecs.open(LM.oriEnvVarFile,'r',encoding='utf8') as f:
             oriEnvVar=json.load(f)
     

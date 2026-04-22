@@ -8,6 +8,9 @@ import atexit
 st=time.time()
 import ctypes
 
+# Perforce 功能开关（与 ins.py 中的 ENABLE_PERFORCE 保持一致）
+ENABLE_PERFORCE = False
+
 import winreg as reg
 from importlib  import reload
 from multiprocessing import Process 
@@ -228,6 +231,8 @@ def syncInfo():
 
 
 def cleanFileP4():
+    if not ENABLE_PERFORCE:
+        return
     import ins
     while True:
         sys.path.insert(0,Lugwit_publicPath+r'\Python\PyFile\ins.py')
@@ -280,6 +285,8 @@ def mulThread_syncFile():
         
         
 def start_p4v_embed_win():
+    if not ENABLE_PERFORCE:
+        return
 
     python_exe_path=LM.LugwitAppDir+r'\python_env\pythonw_p4v_embed_win.exe'
     if is_process_running('pythonw_p4v_embed_win.exe'):
@@ -422,7 +429,8 @@ if __name__ == '__main__':
     # main_.show()
     #main_.showMinimized()
     st_tray_time=time.time()
-    start_p4v_embed_win()
+    if ENABLE_PERFORCE:
+        start_p4v_embed_win()
     main()
     print (f"启动托盘花费时间{time.time()-st_tray_time}")
     lprint (userName!='qqfeng',hostName!='DESKTOP-LDSM1H1')
