@@ -20,8 +20,8 @@ import win32con
 import codecs,time,glob,importlib
 curDir=os.path.dirname(__file__)
 
-menu_dir=os.path.dirname(curDir)+'/tray_menu'
 LugwitToolDir=os.environ["LugwitToolDir"]
+menu_dir=LugwitToolDir+'/tray_menu'
 sys.path.append(LugwitToolDir+'/Lib') 
 sys.path.append(menu_dir) 
 
@@ -37,7 +37,13 @@ if ENABLE_PERFORCE:
     from lperforce.dataType import login_info as login_info_dataType
 from importlib  import reload
 from L_Maya import start_maya
-from L_Tools.sys_tool import l_admin
+try:
+    from L_Tools.sys_tool import l_admin
+    L_TOOLS_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: L_Tools not available: {e}")
+    L_TOOLS_AVAILABLE = False
+    l_admin = None
 
 import os as _os
 iconDir = (LugwitToolDir + '/icons').replace('\\', '/')
@@ -231,6 +237,16 @@ class TrayIcon(QSystemTrayIcon):
         self.menu.show()
         
 
+    @staticmethod
+    def _safe_add_action(menu, action):
+        """安全添加 action，跳过 None 或无效的 action"""
+        if action is not None and menu is not None:
+            menu.addAction(action)
+            return True
+        else:
+            print(f"Warning: skipping null action for menu '{menu}'")
+            return False
+
     def createMenu(self):
         self.menu = QMenu()
         try:
@@ -264,11 +280,12 @@ class TrayIcon(QSystemTrayIcon):
         
         # 强制注销进程 wmic process where name='maya.exe' delete
         self.TDToolMenu:QMenu = self.menu.addMenu(QIcon(iconDir+r'\insTraycon.jpg'),'TD工具')
-        self.TDToolMenu.addAction(QAction(QIcon(iconDir+r'\designer.ico'),\
-                "启动PySide6_QTDesigner", \
-                self, triggered=\
-                partial(l_subprocess.startProcess,\
-                LM.Lugwit_PluginPath+r'\Python\Python39\Lib\site-packages\PySide6\designer.exe')))# type: ignore
+        if hasattr(LM, 'Lugwit_PluginPath') and LM.Lugwit_PluginPath:
+            self.TDToolMenu.addAction(QAction(QIcon(iconDir+r'\designer.ico'),\
+                    "启动PySide6_QTDesigner", \
+                    self, triggered=\
+                    partial(l_subprocess.startProcess,\
+                    LM.Lugwit_PluginPath+r'\Python\Python39\Lib\site-packages\PySide6\designer.exe')))# type: ignore
         
         self.TDToolMenu.addAction(QAction(QIcon(iconDir+r'\designer.ico'),
                 "启动PySide2_QTDesigner", self, 
@@ -325,22 +342,24 @@ class TrayIcon(QSystemTrayIcon):
         self.insPlugMenu.addAction(QAction(QIcon(iconDir+r'\EnvVar.png'),
                         "任务计划程序", self, triggered=partial(self.runSysCmd,"cmd /c taskschd.msc")))# type: ignore
 
-        pyFile=LM.LugwitLibDir+'/Lugwit_Module/l_src/l_subprocess/showMessage_tk.py'
-        self.insPlugMenu.addAction(QAction(QIcon(iconDir+r'\EnvVar.png'),
-                        "启动lprint_popui日志查看器", self, triggered=
-                                                            partial(l_subprocess.startPyFile ,
-                                                            pyFile,
-                                                            'main',
-                                                            specify_sys_executable='currentPythonJieShiQi',
-                                                            usePythonw=False)))# type: ignore
-        pyFile=LM.LugwitAppDir+r'\trayapp\src\l_log\showLog.py'
-        self.insPlugMenu.addAction(QAction(QIcon(iconDir+r'\EnvVar.png'),
-                        "Maya日志查看器", self, triggered=
-                                                partial(l_subprocess.startPyFile ,
-                                                pyFile,
-                                                'main',
-                                                specify_sys_executable='currentPythonJieShiQi',
-                                                usePythonw=False)))# type: ignore
+        if hasattr(LM, 'LugwitLibDir') and LM.LugwitLibDir:
+            pyFile=LM.LugwitLibDir+'/Lugwit_Module/l_src/l_subprocess/showMessage_tk.py'
+            self.insPlugMenu.addAction(QAction(QIcon(iconDir+r'\EnvVar.png'),
+                            "启动lprint_popui日志查看器", self, triggered=
+                                                                partial(l_subprocess.startPyFile ,
+                                                                pyFile,
+                                                                'main',
+                                                                specify_sys_executable='currentPythonJieShiQi',
+                                                                usePythonw=False)))# type: ignore
+        if hasattr(LM, 'LugwitAppDir') and LM.LugwitAppDir:
+            pyFile=LM.LugwitAppDir+r'\trayapp\src\l_log\showLog.py'
+            self.insPlugMenu.addAction(QAction(QIcon(iconDir+r'\EnvVar.png'),
+                            "Maya日志查看器", self, triggered=
+                                                    partial(l_subprocess.startPyFile ,
+                                                    pyFile,
+                                                    'main',
+                                                    specify_sys_executable='currentPythonJieShiQi',
+                                                    usePythonw=False)))# type: ignore
         self.insPlugMenu.addAction(
             QAction(
                 QIcon(iconDir+r'\EnvVar.png'),
@@ -350,13 +369,14 @@ class TrayIcon(QSystemTrayIcon):
             )
         )# type: ignore
 
-        pyFile=LM.LugwitLibDir+r'/L_Tools/sys_tool/setEnvVar.py'
-        self.insPlugMenu.addAction(QAction(QIcon(iconDir+r'\EnvVar.png'),
-            "设置工具环境变量", self, triggered=partial(l_subprocess.startPyFile,
-                                                pyFile,
-                                                'main',
-                                                specify_sys_executable='currentPythonJieShiQi', 
-                                                usePythonw=True)))# type: ignore
+        if hasattr(LM, 'LugwitLibDir') and LM.LugwitLibDir:
+            pyFile=LM.LugwitLibDir+r'/L_Tools/sys_tool/setEnvVar.py'
+            self.insPlugMenu.addAction(QAction(QIcon(iconDir+r'\EnvVar.png'),
+                "设置工具环境变量", self, triggered=partial(l_subprocess.startPyFile,
+                                                    pyFile,
+                                                    'main',
+                                                    specify_sys_executable='currentPythonJieShiQi', 
+                                                    usePythonw=True)))# type: ignore
         pyFile=curDir+r'\tools\setDiskLink\setDiskLink.py'
         self.insPlugMenu.addAction(QAction(QIcon(iconDir+r'\EnvVar.png'),
             "设置磁盘链接", self, triggered=partial(l_subprocess.startPyFile,
@@ -1474,8 +1494,12 @@ class TrayIcon(QSystemTrayIcon):
             lprint(command,os.getenv("MAYA_UI_LANGUAGE"))
             
             if admin_run:
-                # 使用 l_admin 以管理员权限运行命令
-                l_admin.runAsAdmin(pyexe='cmd.exe', pyfile='', args=['/c', command])
+                if l_admin is not None:
+                    # 使用 l_admin 以管理员权限运行命令
+                    l_admin.runAsAdmin(pyexe='cmd.exe', pyfile='', args=['/c', command])
+                else:
+                    lprint("Warning: l_admin not available, running without admin privileges")
+                    process = subprocess.Popen(command, startupinfo=startupinfo)
             else:
                 # 使用 Popen 运行命令，不弹出命令提示符窗口，且不阻塞进程
                 process = subprocess.Popen(command, startupinfo=startupinfo)

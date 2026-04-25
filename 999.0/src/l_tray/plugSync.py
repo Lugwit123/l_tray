@@ -91,7 +91,6 @@ if hasattr(LM, 'Lugwit_publicDisc') and hasattr(LM, 'hostName') and hasattr(LM, 
 else:
     print("Warning: Lugwit_Module imported but missing required attributes")
     LUGWIT_MODULE_AVAILABLE = False
-    LM = None
 
 
 # 获取ConEmu64_lugwit.exe的主窗口句柄（仅在 L_Tools 和 Lugwit_Module 可用时）
@@ -122,17 +121,10 @@ if L_TOOLS_AVAILABLE and LUGWIT_MODULE_AVAILABLE:
 else:
     print("Warning: L_Tools or Lugwit_Module not available, skipping ConEmu window management")
 
+logPath=f"{LM.Lugwit_publicDisc}/Temp/Log/tray/{LM.hostName}_{LM.userName}/{LM.getCurrentTimeAsLogName()}.log"
+if not os.path.exists(os.path.dirname(logPath)):
+    os.makedirs(os.path.dirname(logPath))
 
-# Setup log path (only if Lugwit_Module is available)
-if LUGWIT_MODULE_AVAILABLE:
-    logPath=f"{LM.Lugwit_publicDisc}/Temp/Log/tray/{LM.hostName}_{LM.userName}/{LM.getCurrentTimeAsLogName()}.log"
-    if not os.path.exists(os.path.dirname(logPath)):
-        os.makedirs(os.path.dirname(logPath))
-else:
-    # Use fallback log path
-    logPath = os.path.join(os.path.expanduser("~"), ".lugwit", "tray.log")
-    os.makedirs(os.path.dirname(logPath), exist_ok=True)
-    print(f"Warning: Using fallback log path: {logPath}")
 
 
 
@@ -431,10 +423,10 @@ if __name__ == '__main__':
         start_p4v_embed_win()
     main()
     print (f"启动托盘花费时间{time.time()-st_tray_time}")
-    lprint (userName!='qqfeng',hostName!='DESKTOP-LDSM1H1')
-    if hostName not in ['DESKTOP-LDSM1H1','TD','PC-20240202CTEU',"TD2","TD3"]:
-        syncFile_thread = threading.Thread(target=mulThread_syncFile) 
-        syncFile_thread.start()
+    # lprint (userName!='qqfeng',hostName!='DESKTOP-LDSM1H1')
+    # if hostName not in ['DESKTOP-LDSM1H1','TD','PC-20240202CTEU',"TD2","TD3"]:
+    #     syncFile_thread = threading.Thread(target=mulThread_syncFile) 
+    #     syncFile_thread.start()
     # subprocess.Popen(f'{sys.executable} {DeadlineWorkder_file}',shell=True)
     app.setStyle('Fusion')
     sys.exit(app.exec_())
