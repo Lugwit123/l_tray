@@ -7,6 +7,7 @@ import threading
 import atexit
 st=time.time()
 import ctypes
+import sys
 
 # Perforce 功能开关 - 从 _config.py 统一读取，修改 _config.py 即可控制所有模块
 from _config import ENABLE_PERFORCE
@@ -136,11 +137,10 @@ from Tray import TrayIcon
 
 
 
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QWidget
-from PyQt5 import QtCore
-from PyQt5.QtGui import QIcon
+from PySide6.QtWidgets import QMessageBox, QMainWindow, QApplication, QWidget
+from PySide6 import QtCore
+from PySide6.QtGui import QIcon
 # DeadlineWorkder_file=fr'{LM.LugwitLibDir}\L_Scheduled_Task\start_DeadlineWorkder.py'
-
 
 app = QApplication(sys.argv)
 

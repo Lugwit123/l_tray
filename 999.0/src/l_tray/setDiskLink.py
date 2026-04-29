@@ -1,8 +1,8 @@
 import sys,re
 import os,json,subprocess
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QComboBox, QMessageBox, QLabel
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QComboBox, QMessageBox, QLabel
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont
 from tool_env import *
 sys.path.insert(0,LugwitToolDir+'/Lib')
 

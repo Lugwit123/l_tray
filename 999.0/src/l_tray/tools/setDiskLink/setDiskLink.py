@@ -3,11 +3,11 @@ import re
 import os
 import json
 import subprocess
-from PyQt5.QtWidgets import (
+from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton,
     QComboBox, QMessageBox, QLabel, QLineEdit, QHBoxLayout
 )
-from PyQt5 import uic
+from PySide6 import uic
 
 curDir=os.path.dirname(__file__)
 # 添加 src 目录到 sys.path，以便导入 tool_env

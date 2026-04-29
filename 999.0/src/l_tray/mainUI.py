@@ -1,8 +1,8 @@
 import os
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import *
+from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6.QtWidgets import *
 from Lugwit_Module import *
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication
+from PySide6.QtWidgets import QMessageBox, QMainWindow, QApplication
 
 LugwitPath=os.environ.get('LugwitPath')
 lugwit_PluginPath=os.environ.get('lugwit_PluginPath')

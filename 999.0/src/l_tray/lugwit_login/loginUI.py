@@ -1,11 +1,11 @@
 import sys
 import requests
-from PyQt5.QtWidgets import *  # noqa: F403
-from PyQt5.QtCore import QByteArray, pyqtSlot
-from PyQt5.QtCore import QPoint
-from PyQt5.QtGui import QPixmap, QPalette, QBrush,QPainter
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PySide6.QtWidgets import *  # noqa: F403
+from PySide6.QtCore import QByteArray, Slot as pyqtSlot
+from PySide6.QtCore import QPoint
+from PySide6.QtGui import QPixmap, QPalette, QBrush,QPainter
+from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt
 
 import json
 import os

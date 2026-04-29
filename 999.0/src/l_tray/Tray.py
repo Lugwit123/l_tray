@@ -75,9 +75,15 @@ Lugwit_P4CLIENTDIR=r'D:\TD_Depot'
 
 
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+
+from PySide6.QtCore import *
+from PySide6.QtGui import *
+from PySide6.QtWidgets import *
+
+# PyQt5 compatibility aliases
+pyqtSignal = Signal
+pyqtSlot = Slot
+pyqtProperty = Property
 
 def getDocPath():
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
@@ -620,7 +626,7 @@ class TrayIcon(QSystemTrayIcon):
         self.tray_icon_path=f"{iconDir}/NiuMatIco.png"
         print(self.tray_icon_path,os.path.exists(self.tray_icon_path))
         self.setIcon(QIcon(self.tray_icon_path))
-        self.icon = self.MessageIcon()
+        self.icon = QSystemTrayIcon.MessageIcon.Information  # PySide6 enum value
  
         #把鼠标点击图标的信号和槽连接
         self.activated.connect(self.onIconClicked)
@@ -861,11 +867,12 @@ class TrayIcon(QSystemTrayIcon):
 
         launch_env = os.environ.copy()
         source_packages = os.path.join(wuwo_dir, "..", "rez-package-source")
+        third_party_packages = os.path.join(LugwitToolDir, "rez-package-3rd")
         local_packages = os.path.join(wuwo_dir, "packages")
         build_packages = os.path.join(LugwitToolDir, "rez-package-build")
         release_packages = os.path.join(LugwitToolDir, "rez-package-release")
         launch_env["REZ_PACKAGES_PATH"] = ";".join(
-            [source_packages, local_packages, build_packages, release_packages]
+            [source_packages, third_party_packages, local_packages, build_packages, release_packages]
         )
         launch_env["REZ_CONFIG_FILE"] = os.path.join(wuwo_dir, "rezconfig.py")
 
@@ -1061,6 +1068,8 @@ class TrayIcon(QSystemTrayIcon):
         
     def onMenuShow(self,lnkDir):
         lnkMenu=self.sender()
+        if lnkMenu is None:
+            return
         lnkMenu.clear()
         if os.path.exists(lnkDir):
             lnkList=os.listdir(lnkDir)

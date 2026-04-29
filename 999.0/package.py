@@ -5,7 +5,8 @@ version = "999.0"
 description = "Lugwit Tray Application"
 authors = ["Lugwit Team"]
 
-requires = ["python-3.12+<3.13", "lperforce", "lugwit_env", "L_Tools", "l_scheduler"]
+requires = ["python-3.12+<3.13", "lperforce", "lugwit_env", "L_Tools", "l_scheduler",
+            "pyside6", "pywin32", "psutil"]
 
 def commands():
     env.PYTHONPATH.append('{root}/src')
